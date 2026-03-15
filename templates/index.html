@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Heart Disease Prediction</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: #fff;
+      width: 100%;
+      max-width: 900px;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e3c72;
+      margin-bottom: 10px;
+    }
+
+    p.subtitle {
+      text-align: center;
+      color: #555;
+      margin-bottom: 25px;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    input, select {
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    input:focus, select:focus {
+      border-color: #2a5298;
+      box-shadow: 0 0 5px rgba(42,82,152,0.3);
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    button {
+      background: #1e3c72;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #16325c;
+    }
+
+    .result {
+      margin-top: 25px;
+      padding: 18px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      display: none;
+    }
+
+    .positive {
+      background: #ffe5e5;
+      color: #c62828;
+      border: 1px solid #ef9a9a;
+    }
+
+    .negative {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #a5d6a7;
+    }
+
+    .loading {
+      background: #e3f2fd;
+      color: #1565c0;
+      border: 1px solid #90caf9;
+    }
+
+    .note {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #666;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Heart Disease Prediction</h1>
+    <p class="subtitle">Enter patient details to predict heart disease risk</p>
+
+    <form id="predictionForm">
+      <div class="form-group">
+        <label>Age</label>
+        <input type="number" id="age" required />
+      </div>
+
+      <div class="form-group">
+        <label>Sex</label>
+        <select id="sex" required>
+          <option value="">Select</option>
+          <option value="1">Male</option>
+          <option value="0">Female</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Chest Pain Type (cp)</label>
+        <select id="cp" required>
+          <option value="">Select</option>
+          <option value="0">Typical Angina</option>
+          <option value="1">Atypical Angina</option>
+          <option value="2">Non-anginal Pain</option>
+          <option value="3">Asymptomatic</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Resting Blood Pressure (trestbps)</label>
+        <input type="number" id="trestbps" required />
+      </div>
+
+      <div class="form-group">
+        <label>Cholesterol (chol)</label>
+        <input type="number" id="chol" required />
+      </div>
+
+      <div class="form-group">
+        <label>Fasting Blood Sugar > 120 mg/dl (fbs)</label>
+        <select id="fbs" required>
+          <option value="">Select</option>
+          <option value="1">Yes</option>
+          <option value="0">No</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Resting ECG (restecg)</label>
+        <select id="restecg" required>
+          <option value="">Select</option>
+          <option value="0">Normal</option>
+          <option value="1">ST-T wave abnormality</option>
+          <option value="2">Left ventricular hypertrophy</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Max Heart Rate Achieved (thalach)</label>
+        <input type="number" id="thalach" required />
+      </div>
+
+      <div class="form-group">
+        <label>Exercise Induced Angina (exang)</label>
+        <select id="exang" required>
+          <option value="">Select</option>
+          <option value="1">Yes</option>
+          <option value="0">No</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>ST Depression (oldpeak)</label>
+        <input type="number" step="0.1" id="oldpeak" required />
+      </div>
+
+      <div class="form-group">
+        <label>Slope</label>
+        <select id="slope" required>
+          <option value="">Select</option>
+          <option value="0">Upsloping</option>
+          <option value="1">Flat</option>
+          <option value="2">Downsloping</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Major Vessels (ca)</label>
+        <select id="ca" required>
+          <option value="">Select</option>
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Thal</label>
+        <select id="thal" required>
+          <option value="">Select</option>
+          <option value="0">Unknown</option>
+          <option value="1">Normal</option>
+          <option value="2">Fixed Defect</option>
+          <option value="3">Reversible Defect</option>
+        </select>
+      </div>
+
+      <div class="full-width">
+        <button type="submit">Predict</button>
+      </div>
+    </form>
+
+    <div id="resultBox" class="result"></div>
+
+    <p class="note">
+      This prediction is based on a machine learning model and should not replace medical consultation.
+    </p>
+  </div>
+
+  <script>
+    const form = document.getElementById("predictionForm");
+    const resultBox = document.getElementById("resultBox");
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const data = {
+        age: parseInt(document.getElementById("age").value),
+        sex: parseInt(document.getElementById("sex").value),
+        cp: parseInt(document.getElementById("cp").value),
+        trestbps: parseInt(document.getElementById("trestbps").value),
+        chol: parseInt(document.getElementById("chol").value),
+        fbs: parseInt(document.getElementById("fbs").value),
+        restecg: parseInt(document.getElementById("restecg").value),
+        thalach: parseInt(document.getElementById("thalach").value),
+        exang: parseInt(document.getElementById("exang").value),
+        oldpeak: parseFloat(document.getElementById("oldpeak").value),
+        slope: parseInt(document.getElementById("slope").value),
+        ca: parseInt(document.getElementById("ca").value),
+        thal: parseInt(document.getElementById("thal").value)
+      };
+
+      resultBox.style.display = "block";
+      resultBox.className = "result loading";
+      resultBox.innerText = "Predicting...";
+
+      try {
+        const response = await fetch("/predict", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.prediction === 1) {
+          resultBox.className = "result positive";
+          resultBox.innerText = "⚠️ High Risk of Heart Disease";
+        } else {
+          resultBox.className = "result negative";
+          resultBox.innerText = "✅ Low Risk of Heart Disease";
+        }
+
+        if (result.probability !== undefined) {
+          resultBox.innerText += `\nConfidence: ${(result.probability * 100).toFixed(2)}%`;
+        }
+
+      } catch (error) {
+        resultBox.className = "result positive";
+        resultBox.innerText = "Error connecting to Flask API.";
+        console.error(error);
+      }
+    });
+  </script>
+
+</body>
+</html>
